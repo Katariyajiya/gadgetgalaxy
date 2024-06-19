@@ -1,11 +1,14 @@
 package com.lcwd.electronic.store.services.impl;
 
+import com.lcwd.electronic.store.config.AppConstants;
 import com.lcwd.electronic.store.dtos.ApiResponseMessage;
 import com.lcwd.electronic.store.dtos.PageableResponse;
 import com.lcwd.electronic.store.dtos.UserDto;
+import com.lcwd.electronic.store.entities.Role;
 import com.lcwd.electronic.store.entities.User;
 import com.lcwd.electronic.store.exceptions.ResourceNotFoundException;
 import com.lcwd.electronic.store.helper.Helper;
+import com.lcwd.electronic.store.repositories.RoleRepository;
 import com.lcwd.electronic.store.repositories.UserRepository;
 import com.lcwd.electronic.store.services.UserService;
 import org.modelmapper.ModelMapper;
@@ -17,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -42,6 +46,11 @@ public class UserServiceImpl implements UserService {
 
     private Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     @Override
     public UserDto createUser(UserDto userDto) {
@@ -49,8 +58,21 @@ public class UserServiceImpl implements UserService {
         //generate unique id in string format
         String userId = UUID.randomUUID().toString();
         userDto.setUserId(userId);
+
         // dto->entity
         User user = dtoToEntity(userDto);
+        //password encode
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        //get the normal role
+
+        Role role = new Role();
+        role.setRoleId(UUID.randomUUID().toString());
+        role.setName("ROLE_" + AppConstants.ROLE_NORMAL);
+
+        Role roleNormal = roleRepository.findByName("ROLE_" + AppConstants.ROLE_NORMAL).orElse(role);
+
+        user.setRoles(List.of(roleNormal));
         User savedUser = userRepository.save(user);
         //entity -> dto
         UserDto newDto = entityToDto(savedUser);
@@ -66,8 +88,11 @@ public class UserServiceImpl implements UserService {
         //email update
         user.setAbout(userDto.getAbout());
         user.setGender(userDto.getGender());
-        user.setPassword(userDto.getPassword());
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         user.setImageName(userDto.getImageName());
+
+        // assign normal role to user
+        //by detail jo bhi api se user banega usko ham  log normal user banayenge
 
         //save data
         User updatedUser = userRepository.save(user);

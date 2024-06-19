@@ -4,7 +4,7 @@ import com.lcwd.electronic.store.entities.OrderItem;
 import com.lcwd.electronic.store.entities.User;
 import lombok.*;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

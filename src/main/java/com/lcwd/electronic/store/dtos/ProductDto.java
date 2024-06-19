@@ -6,9 +6,9 @@ import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.persistence.Column;
+import jakarta.persistence.Id;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Date;
 
 @AllArgsConstructor

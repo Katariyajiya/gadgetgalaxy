@@ -3,7 +3,7 @@ package com.lcwd.electronic.store.entities;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Getter
 @Setter

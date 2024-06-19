@@ -4,7 +4,7 @@ import com.lcwd.electronic.store.entities.Order;
 import com.lcwd.electronic.store.entities.Product;
 import lombok.*;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Getter
 @Setter
