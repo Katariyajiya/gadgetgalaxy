@@ -53,6 +53,10 @@ public class User implements UserDetails {
     private List<Role> roles = new ArrayList<>();
 
 
+
+    private Providers provider;
+
+
     // important for roles.
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

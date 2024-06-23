@@ -1,5 +1,6 @@
 package com.lcwd.electronic.store.dtos;
 
+import com.lcwd.electronic.store.entities.Providers;
 import com.lcwd.electronic.store.entities.Role;
 import com.lcwd.electronic.store.validate.ImageNameValid;
 import lombok.*;
@@ -47,4 +48,6 @@ public class UserDto {
 
     @ImageNameValid
     private String imageName;
+
+    private Providers provider;
 }

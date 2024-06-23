@@ -3,6 +3,8 @@ package com.lcwd.electronic.store.config;
 
 import com.lcwd.electronic.store.security.JWTAuthenticationFilter;
 import com.lcwd.electronic.store.security.JwtAuthenticationEntryPoint;
+import com.sun.tools.jconsole.JConsoleContext;
+import jakarta.servlet.http.HttpServletRequest;
 import jdk.jfr.Frequency;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -20,6 +22,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity(debug = true)
@@ -44,8 +50,32 @@ public class SecurityConfig {
         //configuring urls
         //cors ko hame abhi ke lie disable kiy hai
         //isko ham log baad mein sikhenge
-        security.cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.disable());
+//        security.cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.disable());
         //csrf ko hame abhi ke lie disable kiy hai
+
+        security.cors(httpSecurityCorsConfigurer ->
+                        httpSecurityCorsConfigurer.configurationSource(new CorsConfigurationSource() {
+                            @Override
+                            public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+                                CorsConfiguration corsConfiguration = new CorsConfiguration();
+
+                                //origins
+                                //methods
+//                        corsConfiguration.addAllowedOrigin("http://localhost:4200");
+
+//                                =corsConfiguration.setAllowedOrigins(List.of("http://localhost:4200", "http://localhost:4300", "http://localhost:4300"));
+                                corsConfiguration.setAllowedOriginPatterns(List.of("*"));
+                                corsConfiguration.setAllowedMethods(List.of("*"));
+                                corsConfiguration.setAllowCredentials(true);
+                                corsConfiguration.setAllowedHeaders(List.of("*"));
+                                corsConfiguration.setMaxAge(4000L);
+
+
+                                return corsConfiguration;
+                            }
+                        })
+        );
+
         //isko ham log baad mein sikhenge
         security.csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable());
 
@@ -60,7 +90,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/users").permitAll()
                         .requestMatchers(HttpMethod.GET, "/categories/**").permitAll()
                         .requestMatchers("/categories/**").hasRole(AppConstants.ROLE_ADMIN)
-                        .requestMatchers(HttpMethod.POST, "/auth/generate-token").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/generate-token", "/auth/login-with-google").permitAll()
                         .requestMatchers("/auth/**").authenticated()
                         .anyRequest().permitAll()
 

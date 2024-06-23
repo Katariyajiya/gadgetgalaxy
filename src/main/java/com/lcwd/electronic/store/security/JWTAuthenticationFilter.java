@@ -39,21 +39,14 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         //Authorization : Bearer hohkjsdfhobfnsfhoah
         String requestHeader = request.getHeader("Authorization");
         logger.info("Header {} ", requestHeader);
-
-
         String username = null;
-
         String token = null;
-
         if (requestHeader != null && requestHeader.startsWith("Bearer")) {
             //thik hai sab: process...
             token = requestHeader.substring(7);
-
             try {
-
                 username = jwtHelper.getUsernameFromToken(token);
                 logger.info("Token Username : {}", username);
-
 
             } catch (IllegalArgumentException ex) {
                 logger.info("Illegal Argument while fetching the username !!" + ex.getMessage());
@@ -64,13 +57,9 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-
-
         } else {
             logger.info("Invalid Header !! Header is not starting with Bearer");
         }
-
-
         // agar username null nhi hai to
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             // username kuch  hai
@@ -89,7 +78,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
         }
 
-        filterChain.doFilter(request,response);
+        filterChain.doFilter(request, response);
 
 
     }
