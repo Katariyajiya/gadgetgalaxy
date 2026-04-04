@@ -1,7 +1,9 @@
 package com.example.gadgetgalaxy.services;
 
+import com.example.gadgetgalaxy.dto.PageableResponse;
 import com.example.gadgetgalaxy.dto.UserDto;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface UserService {
@@ -10,9 +12,9 @@ public interface UserService {
 
     UserDto updateUser(UserDto userDto,String userId);
 
-    void deleteUser(String userId);
+    void deleteUser(String userId) throws IOException;
 
-    List<UserDto> getAllUser();
+    PageableResponse<UserDto> getAllUser(int pageNumber, int pageSize, String sortBy, String sortDir);
 
     UserDto getUserById(String userId);
 

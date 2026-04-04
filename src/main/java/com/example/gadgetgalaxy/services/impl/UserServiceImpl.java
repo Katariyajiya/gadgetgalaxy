@@ -1,14 +1,28 @@
 package com.example.gadgetgalaxy.services.impl;
 
+import com.example.gadgetgalaxy.dto.PageableResponse;
 import com.example.gadgetgalaxy.dto.UserDto;
 import com.example.gadgetgalaxy.entities.User;
 import com.example.gadgetgalaxy.exception.ResourceNotFoundException;
 import com.example.gadgetgalaxy.repositories.UserRepository;
 import com.example.gadgetgalaxy.services.UserService;
+import com.example.gadgetgalaxy.helper.*;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -21,6 +35,11 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private ModelMapper mapper;
+
+    @Value("${user.profile.image.path}")
+    private String imagePath;
+
+    Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Override
     public UserDto createUser(UserDto userDto) {
@@ -53,16 +72,35 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUser(String userId) {
+    public void deleteUser(String userId) throws IOException {
         User user = userRepository.findById(userId).orElseThrow(()-> new ResourceNotFoundException("User with give id not found!!"));
-        userRepository.delete(user);
+        String fullPath = imagePath + user.getImageName();
+        Path path = Paths.get(fullPath);
+
+        try {
+            Files.delete(path);
+            userRepository.delete(user);
+        }catch (NoSuchFileException ex){
+            logger.info("User image not found in folder");
+            throw  new RuntimeException(ex);
+        }catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
     @Override
-    public List<UserDto> getAllUser() {
-        List<User> users = userRepository.findAll();
-        List<UserDto> userDtos = users.stream().map(user -> entityToDto(user)).collect(Collectors.toList());
-        return userDtos;
+    public PageableResponse<UserDto> getAllUser(int pageNumber, int pageSize, String sortBy, String sortDir) {
+
+        Sort sort = (sortDir.equalsIgnoreCase("desc"))?(Sort.by(sortBy).descending()):(Sort.by(sortBy).ascending());
+
+        //default page number starts from zero
+        Pageable pageable = PageRequest.of(pageNumber,pageSize,sort);
+
+        Page<User> page = userRepository.findAll(pageable);
+
+        PageableResponse<UserDto> response = Helper.getPageableResponse(page, UserDto.class);
+
+        return response;
     }
 
     @Override
