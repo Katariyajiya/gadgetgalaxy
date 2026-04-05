@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 @Getter
@@ -16,7 +17,7 @@ public class CategoryDto {
     private String categoryId;
 
     @NotBlank
-    @Min(value = 4,message = "Must be atleast 4 characters")
+    @Size(min = 4,message = "Must be atleast 4 characters")
     private String title;
 
     @NotBlank(message = "Description is required")
