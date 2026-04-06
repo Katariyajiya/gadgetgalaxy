@@ -1,14 +1,20 @@
 package com.example.gadgetgalaxy.controller;
 
-import com.example.gadgetgalaxy.dto.ApiResponseMessage;
-import com.example.gadgetgalaxy.dto.PageableResponse;
-import com.example.gadgetgalaxy.dto.ProductDto;
+import com.example.gadgetgalaxy.dto.*;
+import com.example.gadgetgalaxy.services.FileService;
 import com.example.gadgetgalaxy.services.ProductService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.UUID;
 
 @RestController
@@ -17,6 +23,12 @@ public class ProductController {
 
     @Autowired
     ProductService productService;
+
+    @Autowired
+    FileService fileService;
+
+    @Value("${product.image.path}")
+    private String imagePath;
 
     @PostMapping("/create")
     public ResponseEntity<ProductDto> createProduct(@RequestBody ProductDto productDto){
@@ -82,5 +94,37 @@ public class ProductController {
         ProductDto singleProduct = productService.getSingleProduct(productId);
         return new ResponseEntity<>(singleProduct,HttpStatus.FOUND);
     }
+
+    @PostMapping("/{productId}")
+    public ResponseEntity<ImageResponse> uploadProductImage(
+            @PathVariable String productId,
+            @RequestParam("productImage")MultipartFile image
+            ) throws IOException {
+
+        String uploadedFile = fileService.uploadFile(image, imagePath);
+        ProductDto productDto = productService.getSingleProduct(productId);
+        productDto.setProductImageName(uploadedFile);
+        ProductDto updatedProduct = productService.update(productDto, productId);
+
+        ImageResponse response = ImageResponse.builder()
+                .imageName(updatedProduct.getProductImageName())
+                .message("Product image uploaded sucessfully")
+                .status(HttpStatus.ACCEPTED)
+                .success(true)
+                .build();
+        return new ResponseEntity<>(response,HttpStatus.ACCEPTED);
+    }
+
+    @GetMapping("/image/{productId}")
+    public void serveUserImage(@PathVariable String productId, HttpServletResponse response) throws IOException {
+        ProductDto product = productService.getSingleProduct(productId);
+       // logger.info("user image : {}",user.getImageName());
+        InputStream resource = fileService.getResource(imagePath,product.getProductImageName());
+        response.setContentType(MediaType.IMAGE_JPEG_VALUE);
+        StreamUtils.copy(resource,response.getOutputStream());
+
+    }
+
+
 
 }

@@ -1,5 +1,6 @@
 package com.example.gadgetgalaxy.dto;
 
+import com.example.gadgetgalaxy.entities.Category;
 import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,4 +24,5 @@ public class ProductDto {
     private boolean live;
     private boolean stock;
     private String productImageName;
+    private CategoryDto category;
 }
