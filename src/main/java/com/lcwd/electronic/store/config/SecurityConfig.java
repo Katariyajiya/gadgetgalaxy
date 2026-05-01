@@ -37,9 +37,20 @@ public class SecurityConfig {
     @Autowired
     private JwtAuthenticationEntryPoint entryPoint;
 
+    private final String[] PUBLIC_URLS = {
+            "/swagger-ui/**",
+            "/swagger-ui.html",
+            "/v3/api-docs/**",
+            "/webjars/**",
+            "/swagger-resources/**"
+    };
+
+
     //    SecurityFilterChain beans
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity security) throws Exception {
+
+
         //configurations
 
         //urls
@@ -88,6 +99,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/users").permitAll()
                         .requestMatchers(HttpMethod.GET, "/categories/**").permitAll()
                         .requestMatchers("/categories/**").hasRole(AppConstants.ROLE_ADMIN)
+                        .requestMatchers(PUBLIC_URLS).permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/generate-token", "/auth/login-with-google", "/auth/regenerate-token").permitAll()
                         .requestMatchers("/auth/**").authenticated()
                         .anyRequest().permitAll()

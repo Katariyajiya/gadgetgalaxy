@@ -7,6 +7,9 @@ import com.lcwd.electronic.store.dtos.UserDto;
 import com.lcwd.electronic.store.entities.Providers;
 import com.lcwd.electronic.store.services.FileService;
 import com.lcwd.electronic.store.services.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +32,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/users")
+@Tag(name="User Controller",description = "Apis for managing users")
 public class UserController {
 
     @Autowired
@@ -89,6 +93,10 @@ public class UserController {
 
     //get single
     @GetMapping("/{userId}")
+    @Operation(
+            summary = "Get User by ID",
+            description = "Fetch a single user using its ID"
+    )
     public ResponseEntity<UserDto> getUser(@PathVariable String userId) {
         return new ResponseEntity<>(userService.getUserById(userId), HttpStatus.OK);
     }
