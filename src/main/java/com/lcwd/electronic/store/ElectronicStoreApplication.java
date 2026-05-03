@@ -39,22 +39,18 @@ public class ElectronicStoreApplication implements CommandLineRunner {
         Role roleAdmin = roleRepository.findByName("ROLE_" + AppConstants.ROLE_ADMIN).orElse(null);
 
         if (roleAdmin == null) {
-
-            Role role1 = new Role();
-            role1.setRoleId(UUID.randomUUID().toString());
-            role1.setName("ROLE_" + AppConstants.ROLE_ADMIN);
-            roleRepository.save(role1);
+            roleAdmin = new Role();
+            roleAdmin.setRoleId(UUID.randomUUID().toString());
+            roleAdmin.setName("ROLE_" + AppConstants.ROLE_ADMIN);
+            roleAdmin = roleRepository.save(roleAdmin);
         }
-
-        Role roleNormal = roleRepository.findByName("ROLE__" + AppConstants.ROLE_NORMAL).orElse(null);
+        Role roleNormal = roleRepository.findByName("ROLE_" + AppConstants.ROLE_NORMAL).orElse(null);
 
         if (roleNormal == null) {
-
-
-            Role role2 = new Role();
-            role2.setRoleId(UUID.randomUUID().toString());
-            role2.setName("ROLE__" + AppConstants.ROLE_NORMAL);
-            roleRepository.save(role2);
+            roleNormal = new Role();
+            roleNormal.setRoleId(UUID.randomUUID().toString());
+            roleNormal.setName("ROLE_" + AppConstants.ROLE_NORMAL);
+            roleNormal = roleRepository.save(roleNormal);
         }
 
         // ek admin user banaunga:

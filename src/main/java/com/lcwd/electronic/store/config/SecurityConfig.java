@@ -28,7 +28,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import java.util.List;
 
 @Configuration
-@EnableWebSecurity(debug = true)
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
@@ -100,6 +99,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/categories/**").permitAll()
                         .requestMatchers("/categories/**").hasRole(AppConstants.ROLE_ADMIN)
                         .requestMatchers(PUBLIC_URLS).permitAll()
+                        .requestMatchers("/test").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/generate-token", "/auth/login-with-google", "/auth/regenerate-token").permitAll()
                         .requestMatchers("/auth/**").authenticated()
                         .anyRequest().permitAll()
